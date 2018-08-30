@@ -76,9 +76,9 @@ module Sisimai
       #                           false: is not an email address
       def is_emailaddress(email)
         return false unless email.is_a?(::String)
-        return false if email =~ %r/(?:[\x00-\x1f]|\x1f)/
+        return false if email.match?(%r/(?:[\x00-\x1f]|\x1f)/)
         return false if email.size > 254
-        return true  if email =~ Re[:ignored]
+        return true  if email.match?(Re[:ignored])
         return false
       end
 
@@ -88,9 +88,9 @@ module Sisimai
       #                           false: Not a valid domain part
       def is_domainpart(dpart)
         return false unless dpart.is_a?(::String)
-        return false if dpart =~ /(?:[\x00-\x1f]|\x1f)/
+        return false if dpart.match?(/(?:[\x00-\x1f]|\x1f)/)
         return false if dpart.include?('@')
-        return true  if dpart =~ Re[:domain]
+        return true  if dpart.match?(Re[:domain])
         return false
       end
 
@@ -108,7 +108,7 @@ module Sisimai
           |[ ]?mailer-daemon[ ]
           )
         /x
-        return true if email.downcase =~ re
+        return true if email.downcase.match?(re)
         return false
       end
 
@@ -122,7 +122,7 @@ module Sisimai
         value = { 'from' => '', 'by' => '' }
 
         # Received: (qmail 10000 invoked by uid 999); 24 Apr 2013 00:00:00 +0900
-        return [] if argvs =~ /qmail[ ]+.+invoked[ ]+/
+        return [] if argvs.match?(/qmail[ ]+.+invoked[ ]+/)
 
         if cr = argvs.match(/\Afrom[ ]+(.+)[ ]+by[ ]+([^ ]+)/)
           # Received: from localhost (localhost)
@@ -151,7 +151,7 @@ module Sisimai
 
           while e = received.shift do
             # Received: from [10.22.22.222] (smtp-gateway.kyoto.ocn.ne.jp [192.0.2.222])
-            if e =~ /\A[\[(]\d+[.]\d+[.]\d+[.]\d+[)\]]\z/
+            if e.match?(/\A[\[(]\d+[.]\d+[.]\d+[.]\d+[)\]]\z/)
               # [192.0.2.1] or (192.0.2.1)
               e = e.delete('[]()')
               addrlist << e
@@ -174,7 +174,7 @@ module Sisimai
             addrlist.each do |e|
               # Skip if the address is a private address
               next if e.start_with?('10.', '127.', '192.168.')
-              next if e =~ /\A172[.](?:1[6-9]|2[0-9]|3[0-1])[.]/
+              next if e.match?(/\A172[.](?:1[6-9]|2[0-9]|3[0-1])[.]/)
               hostaddr = e
               break
             end

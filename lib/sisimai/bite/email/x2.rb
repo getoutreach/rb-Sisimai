@@ -29,7 +29,7 @@ module Sisimai::Bite::Email
       #                                   the arguments are missing
       def scan(mhead, mbody)
         return nil unless mhead['from'].include?('MAILER-DAEMON@')
-        return nil unless mhead['subject'] =~ %r/\A(?>Delivery failure|fail(?:ure|ed) delivery)/
+        return nil unless mhead['subject'].match?(/\A(?>Delivery failure|fail(?:ure|ed) delivery)/)
 
         dscontents = [Sisimai::Bite.DELIVERYSTATUS]
         hasdivided = mbody.split("\n")

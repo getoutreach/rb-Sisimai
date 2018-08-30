@@ -188,7 +188,7 @@ module Sisimai::Bite::Email
 
           if (readcursor & Indicators[:'message-rfc822']) == 0
             # Beginning of the original message part
-            if e =~ MarkingsOf[:rfc822]
+            if e.match?(MarkingsOf[:rfc822])
               readcursor |= Indicators[:'message-rfc822']
               next
             end
@@ -256,7 +256,7 @@ module Sisimai::Bite::Email
               # the server for the recipient domain example.jp by mx.example.jp. [192.0.2.153].
               hostname = cv[1]
               ipv4addr = cv[2]
-              e['rhost'] = if hostname =~ /[-0-9a-zA-Z]+[.][a-zA-Z]+\z/
+              e['rhost'] = if hostname.match?(/[-0-9a-zA-Z]+[.][a-zA-Z]+\z/)
                              # Maybe valid hostname
                              hostname.downcase
                            else
@@ -286,7 +286,7 @@ module Sisimai::Bite::Email
 
           # Set pseudo status code
           e['status'] = Sisimai::SMTP::Status.find(e['diagnosis'])
-          e['reason'] = Sisimai::SMTP::Status.name(e['status']) if e['status'] =~ /\A[45][.][1-7][.][1-9]\z/
+          e['reason'] = Sisimai::SMTP::Status.name(e['status']) if e['status'].match?(/\A[45][.][1-7][.][1-9]\z/)
         end
 
         rfc822part = Sisimai::RFC5322.weedout(rfc822list)

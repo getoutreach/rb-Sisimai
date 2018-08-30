@@ -171,7 +171,7 @@ module Sisimai::Bite::Email
           end
         end
 
-        if recipients == 0 && mbody =~ /notificationType/
+        if recipients == 0 && mbody.match?(/notificationType/)
           # Try to parse with Sisimai::Bite::JSON::AmazonSES module
           require 'sisimai/bite/json/amazonses'
           j = Sisimai::Bite::JSON::AmazonSES.scan(mhead, mbody)

@@ -35,8 +35,8 @@ module Sisimai
       #                           true:  Including 8-bit character
       def is_8bit(argvs)
         v = argvs.to_s
-        return nil   if v.empty?
-        return true  unless v =~ /\A[\x00-\x7f]*\z/
+        return nil  if v.empty?
+        return true unless v.match?(/\A[\x00-\x7f]*\z/)
         return false
       end
 
@@ -66,7 +66,7 @@ module Sisimai
           body: %r|<head>.+</head>.*<body[ >].+</body>|sim,
         }
 
-        if loose || plain =~ match[:html] || plain =~ match[:body]
+        if loose || plain.match?(match[:html]) || plain.match?(match[:body])
           # <html> ... </html>
           # Rewrite <a> elements
           # 1. <a href = 'http://...'>...</a> to " http://... "

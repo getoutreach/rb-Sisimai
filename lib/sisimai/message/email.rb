@@ -158,7 +158,7 @@ module Sisimai
 
         email.scrub!('?')
         email.gsub!(/\r\n/, "\n")  if email.include?("\r\n")
-        email.gsub!(/[ \t]+$/, '') if email =~ /[ \t]+$/
+        email.gsub!(/[ \t]+$/, '') if email.match?(/[ \t]+$/)
 
         hasdivided = email.split("\n")
         return {} if hasdivided.empty?
@@ -417,12 +417,12 @@ module Sisimai
         else
           # NOT text/plain
           lowercased = bodystring.downcase
-          if lowercased =~ ReEncoding[:'quoted-print']
+          if lowercased.match?(ReEncoding[:'quoted-print'])
             # Content-Transfer-Encoding: quoted-printable
             bodystring = Sisimai::MIME.qprintd(bodystring, mailheader)
           end
 
-          if lowercased =~ ReEncoding[:'7bit-encoded'] &&
+          if lowercased.match?(ReEncoding[:'7bit-encoded']) &&
              cv = lowercased.match(ReEncoding[:'some-iso2022'])
             # Content-Transfer-Encoding: 7bit
             # Content-Type: text/plain; charset=ISO-2022-JP
@@ -452,7 +452,7 @@ module Sisimai
         # Check whether or not the message is a bounce mail.
         # Pre-Process email body if it is a forwarded bounce message.
         # Get the original text when the subject begins from 'fwd:' or 'fw:'
-        if mailheader['subject'].downcase =~ /\A[ \t]*fwd?:/
+        if mailheader['subject'].downcase.match?(/\A[ \t]*fwd?:/)
           # Delete quoted strings, quote symbols(>)
           bodystring = bodystring.gsub(/^[>]+[ ]/m, '').gsub(/^[>]$/m, '')
         end

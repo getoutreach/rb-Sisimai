@@ -233,9 +233,9 @@ module Sisimai
 
       while e = readbuffer.shift do
         # The element must not include any character except from 0x20 to 0x7e.
-        next if e[:address] =~ /[^\x20-\x7e]/
+        next if e[:address].match?(/[^\x20-\x7e]/)
 
-        unless e[:address] =~ /\A.+[@].+\z/
+        unless e[:address].match?(/\A.+[@].+\z/)
           # Allow if the argument is MAILER-DAEMON
           next unless Sisimai::RFC5322.is_mailerdaemon(e[:address])
         end
@@ -243,8 +243,8 @@ module Sisimai
         # Remove angle brackets, other brackets, and quotations: []<>{}'`
         # except a domain part is an IP address like neko@[192.0.2.222]
         e[:address] = e[:address].sub(/\A[\[<{('`]/, '').sub(/['`>})]\z/, '')
-        e[:address].chomp!(']') unless e[:address] =~ /[@]\[[0-9A-Za-z:\.]+\]\z/
-        e[:address] = e[:address].sub(/\A["]/, '').chomp('"') unless e[:address] =~ /\A["].+["][@]/
+        e[:address].chomp!(']') unless e[:address].match?(/[@]\[[0-9A-Za-z:\.]+\]\z/)
+        e[:address] = e[:address].sub(/\A["]/, '').chomp('"') unless e[:address].match?(/\A["].+["][@]/)
 
         if addrs
           # Almost compatible with parse() method, returns email address only
@@ -253,9 +253,9 @@ module Sisimai
         else
           # Remove double-quotations, trailing spaces.
           [:name, :comment].each { |f| e[f].strip! }
-          e[:comment] = '' unless e[:comment] =~ /\A[(].+[)]/
-          e[:name].squeeze!(' ')     unless e[:name] =~ /\A["].+["]\z/
-          e[:name].sub!(/\A["]/, '') unless e[:name] =~ /\A["].+["][@]/
+          e[:comment] = '' unless e[:comment].match?(/\A[(].+[)]/)
+          e[:name].squeeze!(' ')     unless e[:name].match?(/\A["].+["]\z/)
+          e[:name].sub!(/\A["]/, '') unless e[:name].match?(/\A["].+["][@]/)
           e[:name].chomp!('"')
         end
         addrtables << e
@@ -350,7 +350,7 @@ module Sisimai
           aname = true unless email.empty?
         end
 
-        if email =~ /\A.+[@].+?\z/
+        if email.match?(/\A.+[@].+?\z/)
           # The address is a VERP or an alias
           if aname
             # The address is an alias: neko+nyaan@example.jp

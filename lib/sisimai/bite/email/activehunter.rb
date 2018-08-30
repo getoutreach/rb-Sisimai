@@ -92,7 +92,7 @@ module Sisimai::Bite::Email
             else
               #  ----- Transcript of session follows -----
               # 550 sorry, no mailbox here by that name (#5.1.1 - chkusr)
-              next unless e =~ /\A[0-9A-Za-z]+/
+              next unless e.match?(/\A[0-9A-Za-z]+/)
               v['diagnosis'] = e
             end
           end

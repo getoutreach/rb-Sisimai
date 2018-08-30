@@ -86,12 +86,12 @@ module Sisimai::Bite::Email
         while e = hasdivided.shift do
           if readcursor == 0
             # Beginning of the bounce message or delivery status part
-            readcursor |= Indicators[:deliverystatus] if e =~ MarkingsOf[:message]
+            readcursor |= Indicators[:deliverystatus] if e.match?(MarkingsOf[:message])
           end
 
           if (readcursor & Indicators[:'message-rfc822']) == 0
             # Beginning of the original message part
-            if e =~ MarkingsOf[:rfc822] || e =~ rxboundary
+            if e.match?(MarkingsOf[:rfc822]) || e.match?(rxboundary)
               readcursor |= Indicators[:'message-rfc822']
               next
             end
@@ -188,7 +188,7 @@ module Sisimai::Bite::Email
             end
             e.delete('alterrors')
           end
-          e['diagnosis'] = Sisimai::String.sweep(e['diagnosis'])
+          e['diagnosis'] = Sisimai::String.sweep(e['diagnosis']) || ''
 
           if mhead['x-spasign'].to_s == 'NG'
             # Content-Type: text/plain; ..., X-SPASIGN: NG (spamghetti, au by EZweb)
@@ -206,7 +206,7 @@ module Sisimai::Bite::Email
                   # Verify each regular expression of session errors
                   ReFailures[r].each do |rr|
                     # Check each regular expression
-                    next unless e['diagnosis'] =~ rr
+                    next unless e['diagnosis'].match?(rr)
                     e['reason'] = r.to_s
                     throw :SESSION
                   end

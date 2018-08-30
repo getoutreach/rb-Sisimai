@@ -41,7 +41,7 @@ module Sisimai
         return false unless heads
         match = false
 
-        if heads['content-type'] =~ /report-type=["]?feedback-report["]?/
+        if heads['content-type'].match?(/report-type=["]?feedback-report["]?/)
           # Content-Type: multipart/report; report-type=feedback-report; ...
           match = true
 
@@ -53,7 +53,7 @@ module Sisimai
             |complaints[@]email-abuse[.]amazonses[.]com
             )\z
           }x
-          if heads['from'] =~ mfrom && heads['subject'].include?('complaint about message from ')
+          if heads['from'].match?(mfrom) && heads['subject'].include?('complaint about message from ')
             # From: staff@hotmail.com
             # From: complaints@email-abuse.amazonses.com
             # Subject: complaint about message from 192.0.2.1
@@ -121,7 +121,7 @@ module Sisimai
         while e = hasdivided.shift do
           if readcursor == 0
             # Beginning of the bounce message or delivery status part
-            if e =~ MarkingsOf[:message]
+            if e.match?(MarkingsOf[:message])
               readcursor |= Indicators[:deliverystatus]
               next
             end
@@ -238,7 +238,7 @@ module Sisimai
               # Original-Mail-From: <somespammer@example.net>
               commondata[:from] = Sisimai::Address.s3s4(cv[1]) if commondata[:from].empty?
 
-            elsif e =~ MarkingsOf[:message]
+            elsif e.match?(MarkingsOf[:message])
               # This is an email abuse report for an email message with the
               #   message-id of 0000-000000000000000000000000000000000@mx
               #   received from IP address 192.0.2.1 on
@@ -260,7 +260,7 @@ module Sisimai
           recipients = 1
         end
 
-        unless rfc822part =~ /\bFrom: [^ ]+[@][^ ]+\b/
+        unless rfc822part.match?(/\bFrom: [^ ]+[@][^ ]+\b/)
           # There is no "From:" header in the original message
           # Append the value of "Original-Mail-From" value as a sender address.
           rfc822part << 'From: ' << commondata[:from] + "\n" unless commondata[:from].empty?
@@ -274,7 +274,7 @@ module Sisimai
         end
 
         dscontents.each do |e|
-          if e['recipient'] =~ /\A[^ ]+[@]\z/
+          if e['recipient'].match?(/\A[^ ]+[@]\z/)
             # AOL = http://forums.cpanel.net/f43/aol-brutal-work-71473.html
             e['recipient'] = Sisimai::Address.s3s4(rcptintext)
           end

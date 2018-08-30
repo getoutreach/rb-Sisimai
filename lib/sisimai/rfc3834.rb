@@ -61,7 +61,7 @@ module Sisimai
           # Exclude message from root@
           next unless mhead.key?(e.to_s)
           next unless mhead[e.to_s]
-          next unless mhead[e.to_s].downcase =~ Excludings[e]
+          next unless mhead[e.to_s].downcase.match?(Excludings[e])
           leave = 1
           break
         end
@@ -72,7 +72,7 @@ module Sisimai
           # RFC3834 Auto-Submitted and other headers
           next unless mhead.key?(e.to_s)
           next unless mhead[e.to_s]
-          next unless mhead[e.to_s].downcase =~ AutoReply1[e]
+          next unless mhead[e.to_s].downcase.match?(AutoReply1[e])
           match += 1
           break
         end
@@ -115,7 +115,7 @@ module Sisimai
         # BODY_PARSER: Get vacation message
         while e = hasdivided.shift do
           # Read the first 5 lines except a blank line
-          countuntil += 1 if e =~ MarkingsOf[:boundary]
+          countuntil += 1 if e.match?(MarkingsOf[:boundary])
 
           if e.empty?
             # Check a blank line

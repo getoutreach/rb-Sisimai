@@ -53,7 +53,7 @@ module Sisimai::Bite::Email
 
           if (readcursor & Indicators[:'message-rfc822']) == 0
             # Beginning of the original message part
-            if e =~ MarkingsOf[:rfc822]
+            if e.match?(MarkingsOf[:rfc822])
               readcursor |= Indicators[:'message-rfc822']
               next
             end
@@ -130,7 +130,7 @@ module Sisimai::Bite::Email
                 # The value does not include ".", use IP address instead.
                 # (TCP|17.111.174.67|47323|192.0.2.225|25)
                 v['lhost'] = cv[1]
-                v['rhost'] = cv[2] unless remotehost =~ /[^.]+[.][^.]+/
+                v['rhost'] = cv[2] unless remotehost.match?(/[^.]+[.][^.]+/)
               end
             else
               # Original-envelope-id: 0NFC009FLKOUVMA0@mr21p30im-asmtp004.me.com
@@ -158,7 +158,7 @@ module Sisimai::Bite::Email
                 # Reporting-MTA: dns;mr21p30im-asmtp004.me.com (tcp-daemon)
                 localhost = cv[1]
                 v['lhost'] ||= localhost
-                v['lhost']   = localhost unless v['lhost'] =~ /[^.]+[.][^ ]+/
+                v['lhost']   = localhost unless v['lhost'].match?(/[^.]+[.][^ ]+/)
               end
             end
           end

@@ -55,7 +55,7 @@ module Sisimai::Bite::Email
 
           if readcursor == 0
             # Beginning of the bounce message or delivery status part
-            if e =~ MarkingsOf[:message]
+            if e.match?(MarkingsOf[:message])
               readcursor |= Indicators[:deliverystatus]
               next
             end

@@ -68,7 +68,7 @@ module Sisimai
 
           if readcursor == 0
             # Beginning of the bounce message or delivery status part
-            if d =~ MarkingsOf[:message]
+            if d.match?(MarkingsOf[:message])
               readcursor |= Indicators[:deliverystatus]
               next
             end
@@ -76,7 +76,7 @@ module Sisimai
 
           if (readcursor & Indicators[:'message-rfc822']) == 0
             # Beginning of the original message part
-            if d =~ MarkingsOf[:rfc822]
+            if d.match?(MarkingsOf[:rfc822])
               readcursor |= Indicators[:'message-rfc822']
               next
             end
@@ -129,7 +129,7 @@ module Sisimai
 
             elsif cv = e.match(/\AX-Actual-Recipient:[ ]*(?:RFC|rfc)822;[ ]*([^ ]+)\z/)
               # X-Actual-Recipient:
-              if cv[1] =~ /[ \t]+/
+              if cv[1].match?(/[ \t]+/)
                 # X-Actual-Recipient: RFC822; |IFS=' ' && exec procmail -f- || exit 75 ...
               else
                 # X-Actual-Recipient: rfc822; kijitora@neko.example.jp
@@ -269,7 +269,7 @@ module Sisimai
                 else
                   # Get error message
                   next if e.start_with?(' ', '-')
-                  next unless e =~ MarkingsOf[:error]
+                  next unless e.match?(MarkingsOf[:error])
 
                   # 500 User Unknown
                   # <kijitora@example.jp> Unknown
@@ -289,7 +289,7 @@ module Sisimai
 
           # Failed to get a recipient address at code above
           match += 1 if mfrom.include?('postmaster@') || mfrom.include?('mailer-daemon@') || mfrom.include?('root@')
-          match += 1 if mhead['subject'].downcase =~ %r{(?>
+          match += 1 if mhead['subject'].downcase.match?(%r{(?>
              delivery[ ](?:failed|failure|report)
             |failure[ ]notice
             |mail[ ](?:delivery|error)
@@ -298,7 +298,7 @@ module Sisimai
             |undeliverable[ ]mail
             |warning:[ ]
             )
-          }x
+          }x)
 
           if mhead['return-path']
             # Check the value of Return-Path of the message
@@ -375,11 +375,11 @@ module Sisimai
             # Get the recipient's email address and error messages.
             break if e.start_with?('__END_OF_EMAIL_MESSAGE__')
             d = e.downcase
-            break if d =~ MarkingsOf[:rfc822]
-            break if d =~ re_stop
+            break if d.match?(MarkingsOf[:rfc822])
+            break if d.match?(re_stop)
 
             next if e.empty?
-            next if d =~ re_skip
+            next if d.match?(re_skip)
             next if e.start_with?('*')
 
             if cv = e.match(re_addr)

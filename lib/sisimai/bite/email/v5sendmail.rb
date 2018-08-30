@@ -51,7 +51,7 @@ module Sisimai::Bite::Email
       #                                   the arguments are missing
       def scan(mhead, mbody)
         # :from => %r/\AMail Delivery Subsystem/,
-        return nil unless mhead['subject'] =~ /\AReturned mail: [A-Z]/
+        return nil unless mhead['subject'].match?(/\AReturned mail: [A-Z]/)
 
         dscontents = [Sisimai::Bite.DELIVERYSTATUS]
         hasdivided = mbody.split("\n")
@@ -76,7 +76,7 @@ module Sisimai::Bite::Email
 
           if (readcursor & Indicators[:'message-rfc822']) == 0
             # Beginning of the original message part
-            if e =~ MarkingsOf[:rfc822]
+            if e.match?(MarkingsOf[:rfc822])
               readcursor |= Indicators[:'message-rfc822']
               next
             end
@@ -130,7 +130,7 @@ module Sisimai::Bite::Email
               # Detect SMTP session error or connection error
               next if v['sessionerr']
 
-              if e =~ MarkingsOf[:error]
+              if e.match?(MarkingsOf[:error])
                 # ----- Transcript of session follows -----
                 # ... while talking to mta.example.org.:
                 v['sessionerr'] = true
@@ -173,7 +173,7 @@ module Sisimai::Bite::Email
                              end
           e['diagnosis'] = Sisimai::String.sweep(e['diagnosis'])
 
-          unless e['recipient'] =~ /\A[^ ]+[@][^ ]+\z/
+          unless e['recipient'].match?(/\A[^ ]+[@][^ ]+\z/)
             # @example.jp, no local part
             if cv = e['diagnosis'].match(/[<]([^ ]+[@][^ ]+)[>]/)
               # Get email address from the value of Diagnostic-Code header

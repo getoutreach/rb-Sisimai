@@ -112,7 +112,7 @@ module Sisimai::Bite::Email
               v['rhost'] = cv[1]
             else
               # Get error message
-              if e =~ /\b[45][.]\d[.]\d\b/ || e =~ /[<][^ ]+[@][^ ]+[>]/ || e =~ /\b[45]\d{2}\b/
+              if e.match?(/\b[45][.]\d[.]\d\b/) || e.match?(/[<][^ ]+[@][^ ]+[>]/) || e.match?(/\b[45]\d{2}\b/)
                 v['diagnosis'] ||= e
               else
                 next if e.empty?

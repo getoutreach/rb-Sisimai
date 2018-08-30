@@ -64,9 +64,9 @@ module Sisimai::Bite::Email
       #                                   part or nil if it failed to parse or
       #                                   the arguments are missing
       def scan(mhead, mbody)
-        return nil unless mhead['from'] =~ /[<]?mailer-daemon[@].*mail[.]ru[>]?/i
+        return nil unless mhead['from'].match?(/[<]?mailer-daemon[@].*mail[.]ru[>]?/i)
         return nil unless mhead['message-id'].end_with?('.mail.ru>', 'smailru.net>')
-        return nil unless mhead['subject'] =~ %r{(?:
+        return nil unless mhead['subject'].match?(%r{(?:
            Mail[ ]delivery[ ]failed(:[ ]returning[ ]message[ ]to[ ]sender)?
           |Warning:[ ]message[ ].+[ ]delayed[ ]+
           |Delivery[ ]Status[ ]Notification
@@ -74,7 +74,7 @@ module Sisimai::Bite::Email
           |Message[ ]frozen
           |error[(]s[)][ ]in[ ]forwarding[ ]or[ ]filtering
           )
-        }x
+        }x)
 
         dscontents = [Sisimai::Bite.DELIVERYSTATUS]
         hasdivided = mbody.split("\n")

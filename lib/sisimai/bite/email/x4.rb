@@ -142,7 +142,7 @@ module Sisimai::Bite::Email
         tryto  = %r/\A[(]qmail[ ]+\d+[ ]+invoked[ ]+for[ ]+bounce[)]/
         match  = 0
         match += 1 if mhead['subject'].start_with?('failure notice', 'Permanent Delivery Failure')
-        match += 1 if mhead['received'].any? { |a| a =~ tryto }
+        match += 1 if mhead['received'].any? { |a| a.match?(tryto) }
         return nil unless match > 0
 
         dscontents = [Sisimai::Bite.DELIVERYSTATUS]
@@ -156,7 +156,7 @@ module Sisimai::Bite::Email
         while e = hasdivided.shift do
           if readcursor == 0
             # Beginning of the bounce message or delivery status part
-            if e =~ MarkingsOf[:message]
+            if e.match?(MarkingsOf[:message])
               readcursor |= Indicators[:deliverystatus]
               next
             end
@@ -223,7 +223,7 @@ module Sisimai::Bite::Email
             # Get the SMTP command name for the session
             ReSMTP.each_key do |r|
               # Verify each regular expression of SMTP commands
-              next unless e['diagnosis'] =~ ReSMTP[r]
+              next unless e['diagnosis'].match?(ReSMTP[r])
               e['command'] = r.to_s.upcase
               break
             end
@@ -247,7 +247,7 @@ module Sisimai::Bite::Email
             e['reason'] = 'blocked'
           else
             # Try to match with each error message in the table
-            if e['diagnosis'] =~ ReIsOnHold
+            if e['diagnosis'].match?(ReIsOnHold)
               # To decide the reason require pattern match with
               # Sisimai::Reason::* modules
               e['reason'] = 'onhold'

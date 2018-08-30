@@ -132,7 +132,7 @@ module Sisimai
           if reasontext.empty?
             ReStatuses.each_key do |e|
               # Try to compare with each string of delivery status codes
-              next unless statuscode =~ e
+              next unless statuscode.match?(e)
               ReStatuses[e].each do |f|
                 # Try to compare with each string of error messages
                 f[:string].each do |g|

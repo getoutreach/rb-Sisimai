@@ -97,12 +97,12 @@ module Sisimai::Bite::Email
         match += 1 if mhead['x-mxl-hash']
         match += 1 if mhead['x-mxl-notehash']
         match += 1 if mhead['from'].start_with?('Mail Delivery System')
-        match += 1 if mhead['subject'] =~ %r{(?:
+        match += 1 if mhead['subject'].match?(%r{(?:
              Mail[ ]delivery[ ]failed(:[ ]returning[ ]message[ ]to[ ]sender)?
             |Warning:[ ]message[ ].+[ ]delayed[ ]+
             |Delivery[ ]Status[ ]Notification
             )
-        }x
+        }x)
         return nil unless match > 0
 
         dscontents = [Sisimai::Bite.DELIVERYSTATUS]

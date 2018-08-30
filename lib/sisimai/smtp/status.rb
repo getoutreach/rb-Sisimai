@@ -726,7 +726,7 @@ module Sisimai
         # @see      code
         def name(argv1 = '')
           return '' unless argv1
-          return '' unless argv1 =~ /\A[245][.]\d[.]\d+\z/
+          return '' unless argv1.match?(/\A[245][.]\d[.]\d+\z/)
           return StandardCode[argv1.to_sym] || ''
         end
 
@@ -751,7 +751,7 @@ module Sisimai
             next unless r = argv1.match(e)
             foundvalue = r[1]
 
-            if argv1 =~ /\b(?:#{foundvalue}[.]\d{1,3}|\d{1,3}[.]#{foundvalue})\b/
+            if argv1.match?(/\b(?:#{foundvalue}[.]\d{1,3}|\d{1,3}[.]#{foundvalue})\b/)
               # Clear and skip if the value is an IPv4 address
               foundvalue = ''
               next

@@ -58,12 +58,12 @@ module Sisimai::Bite::Email
         while e = hasdivided.shift do
           if readcursor == 0
             # Beginning of the bounce message or delivery status part
-            readcursor |= Indicators[:deliverystatus] if e =~ MarkingsOf[:message]
+            readcursor |= Indicators[:deliverystatus] if e.match?(MarkingsOf[:message])
           end
 
           if (readcursor & Indicators[:'message-rfc822']) == 0
             # Beginning of the original message part
-            if e =~ MarkingsOf[:rfc822]
+            if e.match?(MarkingsOf[:rfc822])
               readcursor |= Indicators[:'message-rfc822']
               next
             end
@@ -111,7 +111,7 @@ module Sisimai::Bite::Email
               elsif cv = e.match(/\ARemote-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/)
                 # Remote-MTA: dns; 192.0.2.222 (192.0.2.222, the server for the domain.)
                 v['rhost'] = cv[1].downcase
-                v['rhost'] = '' if v['rhost'] =~ /\A\s+\z/  # Remote-MTA: DNS;
+                v['rhost'] = '' if v['rhost'].match?(/\A\s+\z/) # Remote-MTA: DNS;
 
               elsif cv = e.match(/\ALast-Attempt-Date:[ ]*(.+)\z/)
                 # Last-Attempt-Date: Fri, 24 Mar 2017 23:34:10 -0700 (PDT)
@@ -151,7 +151,7 @@ module Sisimai::Bite::Email
                 connvalues += 1
               else
                 # Detect SMTP session error or connection error
-                if e =~ MarkingsOf[:error]
+                if e.match?(MarkingsOf[:error])
                   # The response from the remote server was:
                   anotherset['diagnosis'] << e
                 else
@@ -162,7 +162,7 @@ module Sisimai::Bite::Email
                   #
                   # The response from the remote server was:
                   # 550 #5.1.0 Address rejected.
-                  next if e =~ MarkingsOf[:html]
+                  next if e.match?(MarkingsOf[:html])
 
                   if anotherset['diagnosis']
                     # Continued error messages from the previous line like
@@ -180,7 +180,7 @@ module Sisimai::Bite::Email
                     # Your message wasn't delivered to * because the address couldn't be found.
                     # Check for typos or unnecessary spaces and try again.
                     next if e.empty?
-                    next unless e =~ MarkingsOf[:message]
+                    next unless e.match?(MarkingsOf[:message])
                     anotherset['diagnosis'] = e
                   end
                 end
@@ -199,7 +199,7 @@ module Sisimai::Bite::Email
             # Copy alternative error message
             e['diagnosis'] = anotherset['diagnosis'] unless e['diagnosis']
 
-            if e['diagnosis'] =~ /\A\d+\z/
+            if e['diagnosis'].match?(/\A\d+\z/)
               e['diagnosis'] = anotherset['diagnosis']
             else
               # More detailed error message is in "anotherset"

@@ -62,8 +62,8 @@ module Sisimai::Bite::Email
       #                                   the arguments are missing
       def scan(mhead, mbody)
         return nil unless mhead['x-mlserver']
-        return nil unless mhead['from'] =~ /.+[-]admin[@].+/
-        return nil unless mhead['message-id'] =~ /\A[<]\d+[.]FML.+[@].+[>]\z/
+        return nil unless mhead['from'].match?(/.+[-]admin[@].+/)
+        return nil unless mhead['message-id'].match?(/\A[<]\d+[.]FML.+[@].+[>]\z/)
 
         dscontents = [Sisimai::Bite.DELIVERYSTATUS]
         hasdivided = mbody.split("\n")
@@ -126,13 +126,13 @@ module Sisimai::Bite::Email
         return nil unless recipients > 0
 
         dscontents.each do |e|
-          e['diagnosis'] = Sisimai::String.sweep(e['diagnosis'])
+          e['diagnosis'] = Sisimai::String.sweep(e['diagnosis']) || ''
           e['agent']     = self.smtpagent
           e.each_key { |a| e[a] ||= '' }
 
           ErrorTable.each_key do |f|
             # Try to match with error messages defined in ErrorTable
-            next unless e['diagnosis'] =~ ErrorTable[f]
+            next unless e['diagnosis'].match?(ErrorTable[f])
             e['reason'] = f.to_s
             break
           end
@@ -141,7 +141,7 @@ module Sisimai::Bite::Email
             # Error messages in the message body did not matched
             ErrorTitle.each_key do |f|
               # Try to match with the Subject string
-              next unless mhead['subject'] =~ ErrorTitle[f]
+              next unless mhead['subject'].match?(ErrorTitle[f])
               e['reason'] = f.to_s
               break
             end

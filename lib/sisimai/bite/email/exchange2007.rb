@@ -47,7 +47,7 @@ module Sisimai::Bite::Email
       def scan(mhead, mbody)
         return nil unless mhead['subject'].start_with?('Undeliverable:')
         return nil unless mhead['content-language']
-        return nil unless mhead['content-language'] =~ /\A[a-z]{2}(?:[-][A-Z]{2})?\z/
+        return nil unless mhead['content-language'].match?(/\A[a-z]{2}(?:[-][A-Z]{2})?\z/)
 
         dscontents = [Sisimai::Bite.DELIVERYSTATUS]
         hasdivided = mbody.split("\n")
@@ -64,7 +64,7 @@ module Sisimai::Bite::Email
         while e = hasdivided.shift do
           if readcursor == 0
             # Beginning of the bounce message or delivery status part
-            if e =~ MarkingsOf[:message]
+            if e.match?(MarkingsOf[:message])
               readcursor |= Indicators[:deliverystatus]
               next
             end

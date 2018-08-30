@@ -277,7 +277,7 @@ module Sisimai
           unless vs.empty?
             # How many times does the D.S.N. appeared
             vm += p['diagnosticcode'].scan(/\b#{vs}\b/).size
-            p['deliverystatus'] = vs if vs =~ /\A[45][.][1-9][.][1-9]\z/
+            p['deliverystatus'] = vs if vs.match?(/\A[45][.][1-9][.][1-9]\z/)
           end
 
           unless vr.empty?

@@ -34,8 +34,8 @@ module Sisimai::Bite::Email
       #                                   part or nil if it failed to parse or
       #                                   the arguments are missing
       def scan(mhead, mbody)
-        return nil unless mhead['subject'] =~ /(?:see transcript for details\z|\AWarning: )/
-        unless mhead['subject'].downcase =~ /\A[ \t]*fwd?:/
+        return nil unless mhead['subject'].match?(/(?:see transcript for details\z|\AWarning: )/)
+        unless mhead['subject'].downcase.match?(/\A[ \t]*fwd?:/)
           # Fwd: Returned mail: see transcript for details
           # Do not execute this code if the bounce mail is a forwarded message.
           return nil unless mhead['from'].start_with?('Mail Delivery Subsystem')
@@ -130,7 +130,7 @@ module Sisimai::Bite::Email
               elsif cv = e.match(/\ARemote-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/)
                 # Remote-MTA: DNS; mx.example.jp
                 v['rhost'] = cv[1].downcase
-                v['rhost'] = '' if v['rhost'] =~ /\A\s+\z/  # Remote-MTA: DNS;
+                v['rhost'] = '' if v['rhost'].match?(/\A\s+\z/) # Remote-MTA: DNS;
 
               elsif cv = e.match(/\ALast-Attempt-Date:[ ]*(.+)\z/)
                 # Last-Attempt-Date: Fri, 14 Feb 2014 12:30:08 -0500
@@ -202,7 +202,7 @@ module Sisimai::Bite::Email
                   # ----- Transcript of session follows -----
                   # Message could not be delivered for too long
                   # Message will be deleted from queue
-                  next if e =~ /\A[ \t]*[-]+/
+                  next if e.match?(/\A[ \t]*[-]+/)
                   if cv = e.match(/\A[45]\d\d[ \t]([45][.]\d[.]\d)[ \t].+/)
                     # 550 5.1.2 <kijitora@example.org>... Message
                     #
@@ -234,12 +234,13 @@ module Sisimai::Bite::Email
           if e['command'].empty?
             e['command'] = 'EHLO' unless esmtpreply.empty?
           end
+          e['diagnosis'] ||= ''
 
           if anotherset['diagnosis']
             # Copy alternative error message
-            e['diagnosis'] = anotherset['diagnosis'] if e['diagnosis'] =~ /\A[ \t]+\z/
-            e['diagnosis'] = anotherset['diagnosis'] unless e['diagnosis']
-            e['diagnosis'] = anotherset['diagnosis'] if e['diagnosis'] =~ /\A\d+\z/
+            e['diagnosis'] = anotherset['diagnosis'] if e['diagnosis'].match?(/\A[ \t]+\z/)
+            e['diagnosis'] = anotherset['diagnosis'] if e['diagnosis'].empty?
+            e['diagnosis'] = anotherset['diagnosis'] if e['diagnosis'].match?(/\A\d+\z/)
           end
           e['diagnosis'] = Sisimai::String.sweep(e['diagnosis'])
 
@@ -251,7 +252,7 @@ module Sisimai::Bite::Email
             end
           end
 
-          unless e['recipient'] =~ /\A[^ ]+[@][^ ]+\z/
+          unless e['recipient'].match?(/\A[^ ]+[@][^ ]+\z/)
             # @example.jp, no local part
             if cv = e['diagnosis'].match(/[<]([^ ]+[@][^ ]+)[>]/)
               # Get email address from the value of Diagnostic-Code header

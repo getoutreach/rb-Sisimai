@@ -61,7 +61,7 @@ module Sisimai::Bite::Email
 
           if (readcursor & Indicators[:'message-rfc822']) == 0
             # Beginning of the original message part
-            if e =~ regularexp
+            if e.match?(regularexp)
               readcursor |= Indicators[:'message-rfc822']
               next
             end
@@ -78,7 +78,7 @@ module Sisimai::Bite::Email
           else
             # Before "message/rfc822"
             next if (readcursor & Indicators[:deliverystatus]) == 0
-            break if e =~ regularexp
+            break if e.match?(regularexp)
 
             # Your message:
             #    From:    originalsender@example.com

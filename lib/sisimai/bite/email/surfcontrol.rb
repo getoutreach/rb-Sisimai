@@ -101,7 +101,7 @@ module Sisimai::Bite::Email
               v['recipient'] = cv[1]
               recipients += 1
 
-            elsif e =~ /\A(?:Sun|Mon|Tue|Wed|Thu|Fri|Sat)[ ,]/
+            elsif e.match?(/\A(?:Sun|Mon|Tue|Wed|Thu|Fri|Sat)[ ,]/)
               # Thu 29 Apr 2010 23:34:45 +0900
               v['date'] = e
 

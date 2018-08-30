@@ -47,7 +47,7 @@ module Sisimai::Bite::Email
         while e = hasdivided.shift do
           if readcursor == 0
             # Beginning of the bounce message or delivery status part
-            readcursor |= Indicators[:deliverystatus] if e =~ MarkingsOf[:message]
+            readcursor |= Indicators[:deliverystatus] if e.match?(MarkingsOf[:message])
           end
 
           if (readcursor & Indicators[:'message-rfc822']) == 0
@@ -99,7 +99,7 @@ module Sisimai::Bite::Email
               v['recipient'] = cv[1]
               recipients += 1
 
-            elsif e =~ /\A[A-Z]{4}/
+            elsif e.match?(/\A[A-Z]{4}/)
               # -------SMTP command
               # DATA
               next if v['command']

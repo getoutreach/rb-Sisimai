@@ -94,11 +94,11 @@ module Sisimai::Bite::JSON
           statuscode = argvs['status']  || ''
           diagnostic = Sisimai::String.sweep(argvs['reason']) || ''
 
-          if statuscode =~ /\A[245]\d\d\z/
+          if statuscode.match?(/\A[245]\d\d\z/)
             # "status": "550"
             v['replycode'] = statuscode
 
-          elsif statuscode =~ /\A[245][.]\d[.]\d+\z/
+          elsif statuscode.match?(/\A[245][.]\d[.]\d+\z/)
             # "status": "5.1.1"
             v['status'] = statuscode
           end

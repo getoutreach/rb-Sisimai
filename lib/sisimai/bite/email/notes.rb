@@ -92,7 +92,7 @@ module Sisimai::Bite::Email
             #
             # ------- Returned Message --------
             v = dscontents[-1]
-            if e =~ /\A[^ ]+[@][^ ]+/
+            if e.match?(/\A[^ ]+[@][^ ]+/)
               # kijitora@notes.example.jp
               if v['recipient']
                 # There are multiple recipient addresses in the message body.
@@ -105,7 +105,7 @@ module Sisimai::Bite::Email
               next if e.empty?
               next if e.start_with?('-')
 
-              if e =~ /[^\x20-\x7e]/
+              if e.match?(/[^\x20-\x7e]/)
                 # Error message is not ISO-8859-1
                 if characters.size > 0
                   # Try to convert string

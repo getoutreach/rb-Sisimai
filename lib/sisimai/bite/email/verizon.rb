@@ -30,7 +30,7 @@ module Sisimai::Bite::Email
           # :'subject' => %r/Undeliverable Message/,
           break unless mhead['received'].any? { |a| a.include?('.vtext.com (') }
           match = 1 if mhead['from'] == 'post_master@vtext.com'
-          match = 0 if mhead['from'] =~ /[<]?sysadmin[@].+[.]vzwpix[.]com[>]?\z/
+          match = 0 if mhead['from'].match?(/[<]?sysadmin[@].+[.]vzwpix[.]com[>]?\z/)
           break
         end
         return nil if match < 0
@@ -66,7 +66,7 @@ module Sisimai::Bite::Email
           while e = hasdivided.shift do
             if readcursor == 0
               # Beginning of the bounce message or delivery status part
-              if e =~ markingsof[:message]
+              if e.match?(markingsof[:message])
                 readcursor |= Indicators[:deliverystatus]
                 next
               end
@@ -74,7 +74,7 @@ module Sisimai::Bite::Email
 
             if (readcursor & Indicators[:'message-rfc822']) == 0
               # Beginning of the original message part
-              if e =~ markingsof[:rfc822]
+              if e.match?(markingsof[:rfc822])
                 readcursor |= Indicators[:'message-rfc822']
                 next
               end
@@ -119,7 +119,7 @@ module Sisimai::Bite::Email
                 subjecttxt = cv[1] if subjecttxt.empty?
               else
                 # 550 - Requested action not taken: no such user here
-                v['diagnosis'] = e if e =~ /\A(\d{3})[ \t][-][ \t](.*)\z/
+                v['diagnosis'] = e if e.match?(/\A(\d{3})[ \t][-][ \t](.*)\z/)
               end
             end
           end
@@ -143,7 +143,7 @@ module Sisimai::Bite::Email
 
             if (readcursor & Indicators[:'message-rfc822']) == 0
               # Beginning of the original message part
-              if e =~ markingsof[:rfc822]
+              if e.match?(markingsof[:rfc822])
                 readcursor |= Indicators[:'message-rfc822']
                 next
               end
@@ -188,7 +188,7 @@ module Sisimai::Bite::Email
               else
                 # Message could not be delivered to mobile.
                 # Error: No valid recipients for this MM
-                v['diagnosis'] = e if e =~ /\AError:[ \t]+(.+)\z/
+                v['diagnosis'] = e if e.match?(/\AError:[ \t]+.+\z/)
               end
             end
           end

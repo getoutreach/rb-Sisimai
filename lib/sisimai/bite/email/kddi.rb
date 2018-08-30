@@ -39,7 +39,7 @@ module Sisimai::Bite::Email
       def scan(mhead, mbody)
         # :'message-id' => %r/[@].+[.]ezweb[.]ne[.]jp[>]\z/,
         match  = 0
-        match += 1 if mhead['from'] =~ /no-reply[@].+[.]dion[.]ne[.]jp/
+        match += 1 if mhead['from'].match?(/no-reply[@].+[.]dion[.]ne[.]jp/)
         match += 1 if mhead['reply-to'].to_s == 'no-reply@app.auone-net.jp'
         match += 1 if mhead['received'].any? { |a| a.include?('ezweb.ne.jp (') }
         match += 1 if mhead['received'].any? { |a| a.include?('.au.com (') }
@@ -56,7 +56,7 @@ module Sisimai::Bite::Email
         while e = hasdivided.shift do
           if readcursor == 0
             # Beginning of the bounce message or delivery status part
-            if e =~ MarkingsOf[:message]
+            if e.match?(MarkingsOf[:message])
               readcursor |= Indicators[:deliverystatus]
               next
             end

@@ -47,7 +47,7 @@ module Sisimai::Bite::Email
       #                                   the arguments are missing
       def scan(mhead, mbody)
         match  = 0
-        match += 1 if mhead['subject'] =~ /\AUndeliverable Mail[ ]*\z/
+        match += 1 if mhead['subject'].match?(/\AUndeliverable Mail[ ]*\z/)
         match += 1 if mhead['x-mailer'].to_s.start_with?('<SMTP32 v')
         return nil unless match > 0
 
@@ -135,18 +135,18 @@ module Sisimai::Bite::Email
             e['diagnosis'] = Sisimai::String.sweep(e['diagnosis'])
             e.delete('alterrors')
           end
-          e['diagnosis'] = Sisimai::String.sweep(e['diagnosis'])
+          e['diagnosis'] = Sisimai::String.sweep(e['diagnosis']) || ''
 
           ReSMTP.each_key do |r|
             # Detect SMTP command from the message
-            next unless e['diagnosis'] =~ ReSMTP[r]
+            next unless e['diagnosis'].match?(ReSMTP[r])
             e['command'] = r.to_s.upcase
             break
           end
 
           ReFailures.each_key do |r|
             # Verify each regular expression of session errors
-            next unless e['diagnosis'] =~ ReFailures[r]
+            next unless e['diagnosis'].match?(ReFailures[r])
             e['reason'] = r.to_s
             break
           end

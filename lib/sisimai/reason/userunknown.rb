@@ -143,7 +143,7 @@ module Sisimai
             )
           }x
 
-          return true if argv1 =~ regex
+          return true if argv1.match?(regex)
           return false
         end
 

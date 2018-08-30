@@ -245,7 +245,7 @@ module Sisimai::Bite::Email
           # https://groups.google.com/forum/#!topic/cdmix/eXfi4ddgYLQ
           # This block has not been tested because we have no email sample
           # including "INT-T?" error code.
-          next unless fbresponse =~ /\AINT-T\d+\z/
+          next unless fbresponse.match?(/\AINT-T\d+\z/)
           e['reason'] = 'systemerror'
         end
 

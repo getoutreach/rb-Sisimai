@@ -134,7 +134,7 @@ module Sisimai::Bite::Email
 
           ReFailures.each_key do |r|
             # Verify each regular expression of session errors
-            next unless e['diagnosis'] =~ ReFailures[r]
+            next unless e['diagnosis'].match?(ReFailures[r])
             e['reason'] = r.to_s
             break
           end

@@ -72,7 +72,7 @@ module Sisimai::Bite::Email
 
           if readcursor == 0
             # Beginning of the bounce message or delivery status part
-            if e =~ MarkingsOf[:message]
+            if e.match?(MarkingsOf[:message])
               readcursor |= Indicators[:deliverystatus]
               next
             end
@@ -213,7 +213,7 @@ module Sisimai::Bite::Email
                   else
                     # Get error message continued from the previous line
                     next unless anotherset['diagnosis']
-                    if e =~ /\A[ \t]{4}(.+)\z/
+                    if e.match?(/\A[ \t]{4}(.+)\z/)
                       #    host mx.example.jp said:...
                       anotherset['diagnosis'] << ' ' << e
                     end
@@ -245,7 +245,7 @@ module Sisimai::Bite::Email
             # Copy alternative error message
             e['diagnosis'] = anotherset['diagnosis'] unless e['diagnosis']
 
-            if e['diagnosis'] =~ /\A\d+\z/
+            if e['diagnosis'].match?(/\A\d+\z/)
               e['diagnosis'] = anotherset['diagnosis']
             else
               # More detailed error message is in "anotherset"
@@ -281,7 +281,7 @@ module Sisimai::Bite::Email
           end
 
           e['diagnosis'] = Sisimai::String.sweep(e['diagnosis'])
-          e['spec']    ||= 'SMTP' if e['diagnosis'] =~ /host .+ said:/
+          e['spec']    ||= 'SMTP' if e['diagnosis'].match?(/host .+ said:/)
           e.each_key { |a| e[a] ||= '' }
         end
 

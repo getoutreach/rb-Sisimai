@@ -99,11 +99,11 @@ module Sisimai
           if agentname0 == ''
             # Try to match with each regular expression
             next if e.empty?
-            next unless e =~ MarkingsOf[:message]
+            next unless e.match?(MarkingsOf[:message])
 
             AgentNames.each_key do |f|
               # Detect the agent name from the line
-              next unless e =~ AgentNames[f]
+              next unless e.match?(AgentNames[f])
               agentname0 = f.to_s
               break
             end

@@ -127,7 +127,7 @@ module Sisimai::Bite::Email
         dscontents.each do |e|
           e['diagnosis'] = Sisimai::String.sweep(e['diagnosis'].gsub(/\\n/, ' '))
           e['agent']     = self.smtpagent
-          e['command'] ||= 'RCPT' if e['diagnosis'] =~ /[<].+[@].+[>]/
+          e['command'] ||= 'RCPT' if e['diagnosis'].match?(/[<].+[@].+[>]/)
         end
 
         rfc822part = Sisimai::RFC5322.weedout(rfc822list)

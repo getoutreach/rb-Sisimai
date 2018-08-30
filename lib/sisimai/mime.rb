@@ -41,7 +41,7 @@ module Sisimai
 
         while e = piece.shift do
           # Check all the string in the array
-          next unless e =~ /[ \t]*=[?][-_0-9A-Za-z]+[?][BbQq][?].+[?]=?[ \t]*/
+          next unless e.match?(/[ \t]*=[?][-_0-9A-Za-z]+[?][BbQq][?].+[?]=?[ \t]*/)
           mime1 = true
         end
         return mime1
@@ -124,7 +124,7 @@ module Sisimai
         # or "Content-Transfer-Encoding: quoted-printable" are not included in
         # the message body.
         return argv1.unpack('M').first if boundary00.empty?
-        return argv1.unpack('M').first unless argv1.downcase =~ ReE[:'quoted-print']
+        return argv1.unpack('M').first unless argv1.downcase.match?(ReE[:'quoted-print'])
 
         boundary01 = Sisimai::MIME.boundary(heads['content-type'], 1)
         bodystring = ''
@@ -177,7 +177,7 @@ module Sisimai
                   break if e.split('').any? { |c| c.ord < 32 || c.ord > 126 }
                   if e.end_with?('=')
                     # Padding character of Base64 or not
-                    break if e =~ /[\+\/0-9A-Za-z]{32,}[=]+\z/
+                    break if e.match?(/[\+\/0-9A-Za-z]{32,}[=]+\z/)
                   else
                     if e.include?('=') && ! e.upcase.include?('=3D')
                       # Including "=" not as "=3D"
@@ -195,7 +195,7 @@ module Sisimai
           else
             # NOT Quoted-Printable encoded text block
             lowercased = e.downcase
-            if e =~ /\A[-]{2}[^\s]+[^-]\z/
+            if e.match?(/\A[-]{2}[^\s]+[^-]\z/)
               # Start of the boundary block
               # --=_gy7C4Gpes0RP4V5Bs9cK4o2Us2ZT57b-3OLnRN+4klS8dTmQ
               unless e == boundary00
@@ -208,7 +208,7 @@ module Sisimai
               encodename = cv[1]
               mimeinside = true if ctencoding
 
-            elsif lowercased =~ ReE[:'quoted-print']
+            elsif lowercased.match?(ReE[:'quoted-print'])
               # Content-Transfer-Encoding: quoted-printable
               ctencoding = true
               mimeinside = true if encodename

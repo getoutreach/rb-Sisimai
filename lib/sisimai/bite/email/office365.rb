@@ -98,10 +98,10 @@ module Sisimai::Bite::Email
         match += 1 if mhead['x-ms-exchange-crosstenant-originalarrivaltime']
         match += 1 if mhead['x-ms-exchange-crosstenant-fromentityheader']
         match += 1 if mhead['x-ms-exchange-transport-crosstenantheadersstamped']
-        match += 1 if mhead['received'].any? { |a| a =~ tryto }
+        match += 1 if mhead['received'].any? { |a| a.match?(tryto) }
         if mhead['message-id']
           # Message-ID: <00000000-0000-0000-0000-000000000000@*.*.prod.outlook.com>
-          match += 1 if mhead['message-id'] =~ tryto
+          match += 1 if mhead['message-id'].match?(tryto)
         end
         return nil if match < 2
 
@@ -119,7 +119,7 @@ module Sisimai::Bite::Email
         while e = hasdivided.shift do
           if readcursor == 0
             # Beginning of the bounce message or delivery status part
-            if e =~ MarkingsOf[:message]
+            if e.match?(MarkingsOf[:message])
               readcursor |= Indicators[:deliverystatus]
               next
             end
@@ -236,7 +236,7 @@ module Sisimai::Bite::Email
 
           ReCommands.each_key do |p|
             # Try to match with regular expressions defined in ReCommands
-            next unless e['diagnosis'] =~ ReCommands[p]
+            next unless e['diagnosis'].match?(ReCommands[p])
             e['command'] = p.to_s
             break
           end
@@ -244,7 +244,7 @@ module Sisimai::Bite::Email
 
           StatusList.each_key do |f|
             # Try to match with each key as a regular expression
-            next unless e['status'] =~ f
+            next unless e['status'].match?(f)
             e['reason'] = StatusList[f]
             break
           end

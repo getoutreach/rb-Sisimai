@@ -254,7 +254,7 @@ module Sisimai
       def o2d(argv1 = 0, argv2 = '-')
         piece = ::DateTime.now
 
-        return piece.strftime('%Y/%m/%d') unless argv1 =~ /\A[-]?\d+\z/
+        return piece.strftime('%Y/%m/%d') unless argv1.match?(/\A[-]?\d+\z/)
         epoch = piece.to_time.to_i - argv1 * 86400
 
         if epoch < 0
@@ -297,7 +297,7 @@ module Sisimai
 
         while p = timetokens.shift do
           # Parse each piece of time
-          if p =~ /\A[A-Z][a-z]{2}[,]?\z/
+          if p.match?(/\A[A-Z][a-z]{2}[,]?\z/)
             # Day of week or Day of week; Thu, Apr, ...
             p.chop if p.size == 4 # Thu, -> Thu
 
@@ -309,7 +309,7 @@ module Sisimai
               # Month name abbr.; Apr, May, ...
               v[:M] = p
             end
-          elsif p =~ /\A\d{1,4}\z/
+          elsif p.match?(/\A\d{1,4}\z/)
             # Year or Day; 2005, 31, 04,  1, ...
             if p.to_i > 31
               # The piece is the value of an year
@@ -341,16 +341,16 @@ module Sisimai
             # Time: 1:4 => 01:04:00
             v[:T] = sprintf('%02d:%02d:00', cr[1].to_i, cr[2].to_i)
 
-          elsif p =~ /\A[APap][Mm]\z/
+          elsif p.match?(/\A[APap][Mm]\z/)
             # AM or PM
             afternoon1 = 1
           else
             # Timezone offset and others
-            if p =~ /\A[-+][01]\d{3}\z/
+            if p.match?(/\A[-+][01]\d{3}\z/)
               # Timezone offset; +0000, +0900, -1000, ...
               v[:z] ||= p
 
-            elsif p =~ /\A[(]?[A-Z]{2,5}[)]?\z/
+            elsif p.match?(/\A[(]?[A-Z]{2,5}[)]?\z/)
               # Timezone abbreviation; JST, GMT, UTC, ...
               v[:z] ||= abbr2tz(p) || '+0000'
             else
@@ -467,7 +467,7 @@ module Sisimai
           return nil if ztime.abs > TZ_OFFSET
           return ztime
 
-        elsif argv1 =~ /\A[A-Za-z]+\z/
+        elsif argv1.match?(/\A[A-Za-z]+\z/)
           return tz2second(TimeZoneAbbr[argv1.to_sym])
         else
           return nil
